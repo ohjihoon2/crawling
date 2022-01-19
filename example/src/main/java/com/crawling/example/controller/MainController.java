@@ -6,10 +6,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class MainController {
@@ -74,8 +79,10 @@ public class MainController {
     }
 
     @RequestMapping("/crawling/{search}")
-    public String Crawling(@PathVariable("search") String search){
-        System.out.println("[ 크롤링 페이지 ]");
+    public String Crawling(@PathVariable("search") String search, Model model){
+        System.out.println("[ "+ search +"- 크롤링 페이지 ]");
+        List<Map<String, Object>> list1 = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list2 = new ArrayList<Map<String, Object>>();
 
         try {
             // 1. 수집 대상 URL
@@ -122,9 +129,18 @@ public class MainController {
             System.out.println("\n[CSS Selector 탐색]");
             Elements files = html1.select(".lst_related_srch._list_box .item .keyword");
             System.out.println("===== Naver 연관검색어 START =====");
+
+
             for( Element elm : files ) {
+                Map<String,Object> map = new HashMap<String,Object>();
                 String text = elm.text();
                 String href = elm.attr("href");
+
+                map.put("site","naver");
+                map.put("text",text);
+                map.put("href",href);
+
+                list1.add(map);
 
                 System.out.println( text+" > "+href );
             }
@@ -133,11 +149,21 @@ public class MainController {
 
             Elements googleSearches = html2.select(".EIaa9b > div > div");
             System.out.println("===== Google 연관검색어 START =====");
+
+
             for( Element elm : googleSearches ) {
                 String text = elm.text();
                 String href = elm.attr("href");
 
+                Map<String,Object> map = new HashMap<>();
+                map.put("site","google");
+                map.put("text",text);
+                map.put("href",href);
+
+                list2.add(map);
+
                 System.out.println( text+" > "+href );
+
             }
 
             System.out.println("=====Google 연관검색어 END  =====");
@@ -146,6 +172,12 @@ public class MainController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+        System.out.println("list1 = " + list1);
+        model.addAttribute("search", search);
+        model.addAttribute("list1",list1);
+        model.addAttribute("list2",list2);
 
         return "crawling";
     }

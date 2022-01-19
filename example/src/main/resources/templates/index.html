@@ -7,14 +7,16 @@
 
     <script>
         function start(){
-            location.href = "/crawling";
+            var str = $("#searchMsg").val();
+            location.href = "/crawling/"+str;
         }
 
     </script>
 </head>
 <body>
         <h2>테스트</h2>
-        <button onclick="start()" style="padding: 10px" value="button"></button>
+        <input type="text" id="searchMsg">
+        <button onclick="start()" style="padding: 10px" value="button">검색</button>
 
 </body>
 </html>
