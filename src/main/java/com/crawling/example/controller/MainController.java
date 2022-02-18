@@ -5,6 +5,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +32,35 @@ public class MainController {
         return "index";
     }
 
+    @RequestMapping("/sele")
+    public String SeleniumTest(){
+        System.out.println("[ 셀레니움 크롤링 페이지 ]");
+        WebDriver driver;
+        System.setProperty("webdriver.gecko.driver", "geckodriver.exe");
+        System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+
+//        다른 디렉토리에 geckodriver.exe 가 존재 할 경우
+//        System.setProperty("webdriver.gecko.driver", "c:\geckodriver.exe");
+
+        // 실행 시 크롬 창 안열리는 옵션
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--no-sandbox");
+
+        driver = new ChromeDriver(chromeOptions);
+
+        driver.get("https://ko.wikipedia.org/wiki/%EB%84%A4%EC%9D%B4%EB%B2%84");
+
+        List<WebElement> posts = driver.findElements(By.className("mw-body-content"));
+
+        for(WebElement e : posts) {
+            System.out.println(e.getText());
+            System.out.println("1");
+        }
+
+        driver.quit(); // 웹브라우져 닫음
+        return "index";
+    }
 
     @RequestMapping("/test")
     public String CrawlingTest(){
